@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!--Description-->
+    
+        <meta name="description" content="A fractal is a geometric figure that displays a repeating pattern every scale.The Mandelbrot set is a fractal that is relatively easy to generate and ">
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="Tobi Akomolede">
+    
+
+    <!--Open Graph Title-->
+    
+        <meta property="og:title" content="Tutorial - A fractal generator in Scala"/>
+    
+
+    <!--Open Graph Site Name-->
+    <meta property="og:site_name" content="Tobi Akomolede"/>
+
+    <!--Page Cover-->
+    
+        <meta property="og:image" content="undefined"/>
+    
+
+    <!-- Title -->
+    
+    <title>Tutorial - A fractal generator in Scala - Tobi Akomolede</title>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/sass/main.css">
+
+    <!--[if lt IE 8]>
+        <script src="/js/ie/html5shiv.js"></script>
+    <![endif]-->
+
+    <!--[if lt IE 8]>
+        <link rel="stylesheet" href="/sass/ie8.css">
+    <![endif]-->
+
+    <!--[if lt IE 9]>
+        <link rel="stylesheet" href="/sass/ie9.css">
+    <![endif]-->
+
+    <!-- Gallery -->
+    <link href="//cdn.rawgit.com/noelboss/featherlight/1.3.5/release/featherlight.min.css" type="text/css" rel="stylesheet" />
+
+    <!-- Google Analytics -->
+    
+
+
+</head>
+
+<body>
+
+    <div id="wrapper">
+
+        <!-- Menu -->
+        <!-- Header -->
+<header id="header">
+    <div class="inner">
+
+        <!-- Logo -->
+        <a href="/" class="logo">
+            <span class="symbol"><img src="/images/blog1.png" alt="" /></span><span class="title">Tobi Akomolede</span>
+        </a>
+
+        <!-- Nav -->
+        <nav>
+            <ul>
+                <li><a href="#menu">Menu</a></li>
+            </ul>
+        </nav>
+
+    </div>
+</header>
+
+<!-- Menu -->
+<nav id="menu">
+    <h2>Menu</h2>
+    <ul>
+        
+            <li>
+                <a href="/">Home</a>
+            </li>
+        
+            <li>
+                <a href="/archives">Archives</a>
+            </li>
+        
+            <li>
+                <a href="/About/index.html">About</a>
+            </li>
+        
+    </ul>
+</nav>
+
+
+        <div id="main">
+            <div class="inner">
+
+                <!-- Main Content -->
+                
+
+    <h1 class="title">Tutorial - A fractal generator in Scala</h1>
+    <div class="meta">
+        2016-10-24
+    </div>
+
+
+    <span class="image main"><img src="/assets/mandelmoc1-detail.png" alt="" /></span>
+
+
+<!-- Gallery -->
+
+
+<!-- Content -->
+<p>A fractal is a geometric figure that displays a repeating pattern every scale.The Mandelbrot set is a fractal that is relatively easy to generate and illustrates the concept of a fractal quite well.This tutorial will show you how to generate the Mandelbrot set using parallel Scala routines.</p>
+<p>Before we can start coding, we first have to understand what the Mandelbrot set is and how it is generated.<br>Given a function:</p>
+<p>  <em>z<sub>n</sub> = z<sub>n-1</sub><sup>2</sup> + c</em>, where <em>z<sub>n</sub></em> and <em>c</em> are complex numbers, and<br>  <em>z<sub>0</sub> = c</em>,</p>
+<p>The Mandelbrot set <em>M</em> is the set of all complex numbers <em>c</em>s such that <em>z<sub>n</sub></em> does not diverge as <em>n</em> approaches infinity. For our purposes, it will be as n approaches some fixed number <code>MaxIter</code>, rather than infinity. This can be represented as:</p>
+<p><img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ea17613cecf92dbe8bb5f464a3862b08678ecd08" alt="alt-text" title="https://en.wikipedia.org/wiki/Mandelbrot_set"><br><img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a870b844b71a8655d596495ba927da1f9432f881" alt="alt-text" title="https://en.wikipedia.org/wiki/Mandelbrot_set"><br><em>Images from: <a href="https://en.wikipedia.org/wiki/Mandelbrot_set" target="_blank" rel="external">https://en.wikipedia.org/wiki/Mandelbrot_set</a></em></p>
+<p>This means that to generate the Mandelbrot set, all we have to do is for each pixel in the image we’d like to generate, take that as our <em>c</em> value,and determine for that <em>c</em> whether z<sub>n</sub> diverges. How do we check whether it diverges or not?The magnitude of z<sub>n</sub>, or sqrt(x<sup>2</sup> + y<sup>2</sup>) should be less than or equal to 2. As <em>z<sub>0</sub> = 0</em>, we know <em>x<sub>0</sub> = 0</em> and <em>y<sub>0</sub> = 0</em>.</p>
+<p><em>z<sub>n</sub> = z<sub>n-1</sub><sup>2</sup> + c</em> =<br><em>(a<sub>n-1</sub> + b<sub>n-1</sub>i)<sup>2</sup> + c =</em><br><em>a<sub>n-1</sub><sup>2</sup> + 2a<sub>n-1</sub>b<sub>n-1</sub>i + b<sub>n-1</sub><sup>2</sup>i<sup>2</sup> + c =</em><br><em>a<sub>n-1</sub><sup>2</sup> + 2a<sub>n-1</sub>b<sub>n-1</sub>i - b<sub>n-1</sub><sup>2</sup> + c</em><br><em>x<sub>n</sub> =  a<sub>n-1</sub><sup>2</sup> - b<sub>n-1</sub><sup>2</sup> + c<sub>x</sub></em> (All imaginary terms removed)<br><em>y<sub>n</sub> =  2a<sub>n-1</sub>b<sub>n-1</sub>i  + c<sub>y</sub></em> (All non-imaginary terms removed), where<br><em>c<sub>x</sub></em> is the real part of complex number <em>c</em>, and<br><em>c<sub>y</sub></em> is the imaginary part of complex number <em>c</em></p>
+<p>In summation, the process of finding the Mandelbrot set is as follows</p>
+<ol>
+<li>Initialize the empty Mandelbrot set <em>M</em>,</li>
+<li>Take a pixel of the image to be the complex number <em>c</em>, with <em>z = c</em>,</li>
+<li>Calculate <em>x</em> and <em>y</em>,<ul>
+<li>If the number of iteration for this pixel is greater than <code>MaxIter</code>, where <code>MaxIter</code> is some fixed number, add <em>c</em> to set <em>M</em> and continue to step 4</li>
+<li>If <em>|| z = x + y || &gt; 2</em>, discard <em>c</em> and continue to step 4</li>
+<li>If none of the above, set <em>z = z<sub>2</sub> + c</em> and go to step 3</li>
+</ul>
+</li>
+<li>Repeat Steps 1-3 for every pixel in the image.</li>
+</ol>
+<p>Now that we know how to generate the Mandelbrot set, onto code!</p>
+<p>My Scala implementation of this is broken down into two main methods:</p>
+<p> <code>def renderPixel(index : Int) : Unit</code>, and</p>
+<p> <code>def recurse(x : Double, y : Double, cx : Double, cy : Double, iterations : Int) : Int</code></p>
+<p> Source for <code>renderPixel</code>:<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"> def renderPixel(index : Int) : Unit = &#123;</div><div class="line">  val (x, y) = (index % width, index / width)</div><div class="line">  val (cx, cy) = ((x - (width / 2.0) )* (4.0 / width), (y - (width / 2.0)) * (4.0 / width))</div><div class="line"></div><div class="line">  val iter = recurse(cx, cy, cx, cy, 0)</div><div class="line">  val color = genColor(iter, maxIter)</div><div class="line">  img.setRGB(x, y, color.getRGB)</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>The first line maps the 1-dimensional pixel index into a 2-dimensional pixel coordinate.Then that coordinate is mapped into the space with x in range [-2.0, 2.0], y in range [-2.0, 2.0]The function <code>recurse</code> is called to determine until how manyiterations of the function z<sub>n</sub> does it take for that function to reach our condition of divergence, <em>z<sub>n</sub> &gt; 2.0</em>. It then uses this number to assign a color to that pixel in the generated image.</p>
+<p>Source for <code>recurse</code>:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">def recurse(x : Double, y : Double, cx : Double, cy : Double, iterations : Int) : Int = &#123;</div><div class="line">      if(iterations &gt; maxIter || math.pow(x, 2) + math.pow(y,2) &gt; 4.0)</div><div class="line">      &#123;</div><div class="line">        iterations</div><div class="line">      &#125;</div><div class="line">      else</div><div class="line">      &#123;</div><div class="line">        val x1 = math.pow(x, 2) - math.pow(y, 2) + cx</div><div class="line">        val y1 = 2 * x * y + cy</div><div class="line">        recurse(x1, y1, cx, cy, iterations + 1)</div><div class="line">      &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
+<p>This function is recursive, taking as input</p>
+<ul>
+<li>Coordinate of z<sub>n</sub> (as x and y) for the current iteration in the [-2.0, 2.0] space,</li>
+<li>Coordinate of the starting c (as cx and cy) in the [-2.0, 2.0] space, and</li>
+<li>Current iteration number</li>
+</ul>
+<p>The first, the base condition, checks whether our iteration count is greater than<code>maxIter</code> or whether z<sub>n</sub> is greater than 2.0 (if you’re confused by the 4.0, we simply just did not take the square root of both sides). If that is the case, then it returns our current iteration. If not, it calculates the x and y components for the new z<sub>n</sub> and calls itself with those new parameters.</p>
+<p>And that’s pretty much it! Thanks for reading!</p>
+<p>Full source code (<a href="https://github.com/Mocuto/mandelmoc" target="_blank" rel="external">Or check out the repo on GitHub</a>):</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> com.mandelmoc</div><div class="line"></div><div class="line"><span class="keyword">import</span> java.awt.<span class="type">Color</span></div><div class="line"><span class="keyword">import</span> java.awt.image.<span class="type">BufferedImage</span></div><div class="line"><span class="keyword">import</span> java.io.<span class="type">File</span></div><div class="line"><span class="keyword">import</span> javax.imageio.<span class="type">ImageIO</span></div><div class="line"></div><div class="line"><span class="keyword">import</span> scala.annotation.tailrec</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">object</span> <span class="title">MandelMoc</span> </span>&#123;</div><div class="line"></div><div class="line">  <span class="keyword">val</span> <span class="type">Colors</span> = <span class="type">List</span>(</div><div class="line">    <span class="type">Color</span>.<span class="type">CYAN</span>,</div><div class="line">    <span class="type">Color</span>.<span class="type">MAGENTA</span>,</div><div class="line">    <span class="type">Color</span>.<span class="type">YELLOW</span>,</div><div class="line">    <span class="type">Color</span>.<span class="type">RED</span>,</div><div class="line">    <span class="type">Color</span>.<span class="type">GREEN</span>,</div><div class="line">    <span class="type">Color</span>.<span class="type">BLUE</span>,</div><div class="line">    <span class="type">Color</span>.<span class="type">WHITE</span>,</div><div class="line">    <span class="type">Color</span>.<span class="type">BLACK</span></div><div class="line">  )</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">start</span></span>(width : <span class="type">Int</span>, maxIter : <span class="type">Int</span>) : <span class="type">BufferedImage</span> = &#123;</div><div class="line">    <span class="meta">@tailrec</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">recurse</span></span>(x : <span class="type">Double</span>, y : <span class="type">Double</span>, cx : <span class="type">Double</span>, cy : <span class="type">Double</span>, iterations : <span class="type">Int</span>) : <span class="type">Int</span> = &#123;</div><div class="line">      <span class="keyword">if</span>(iterations &gt; maxIter || math.pow(x, <span class="number">2</span>) + math.pow(y,<span class="number">2</span>) &gt; <span class="number">4.0</span>)</div><div class="line">      &#123;</div><div class="line">        iterations</div><div class="line">      &#125;</div><div class="line">      <span class="keyword">else</span></div><div class="line">      &#123;</div><div class="line">        <span class="keyword">val</span> x1 = math.pow(x, <span class="number">2</span>) - math.pow(y, <span class="number">2</span>) + cx</div><div class="line">        <span class="keyword">val</span> y1 = <span class="number">2</span> * x * y + cy</div><div class="line">        recurse(x1, y1, cx, cy, iterations + <span class="number">1</span>)</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">val</span> img = <span class="keyword">new</span> <span class="type">BufferedImage</span>(width, width, <span class="type">BufferedImage</span>.<span class="type">TYPE_INT_RGB</span>)</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">renderPixel</span></span>(index : <span class="type">Int</span>) : <span class="type">Unit</span> = &#123;</div><div class="line">      <span class="keyword">val</span> (x, y) = (index % width, index / width)</div><div class="line">      <span class="keyword">val</span> (cx, cy) = ((x - (width / <span class="number">2.0</span>) )* (<span class="number">4.0</span> / width), (y - (width / <span class="number">2.0</span>)) * (<span class="number">4.0</span> / width))</div><div class="line"></div><div class="line">      <span class="keyword">val</span> iter = recurse(cx, cy, cx, cy, <span class="number">0</span>)</div><div class="line">      <span class="keyword">val</span> color = genColor(iter, maxIter)</div><div class="line">      img.setRGB(x, y, color.getRGB)</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    (<span class="number">0</span> until (width * width)).par.foreach(i =&gt; renderPixel(i)) <span class="comment">// This line is where the parallelization occurs</span></div><div class="line"></div><div class="line">    img</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">genColor</span></span>(iter : <span class="type">Int</span>, maxIter : <span class="type">Int</span>) : <span class="type">Color</span> = <span class="type">Colors</span>(iter % <span class="type">Colors</span>.length)</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">main</span></span>(args: <span class="type">Array</span>[<span class="type">String</span>]) : <span class="type">Unit</span> = &#123;</div><div class="line">    <span class="keyword">val</span> width = <span class="number">2560</span></div><div class="line">    <span class="keyword">val</span> img = start(width, <span class="number">1000</span>)</div><div class="line">    <span class="keyword">try</span></div><div class="line">    &#123;</div><div class="line">      <span class="keyword">val</span> outputfile = <span class="keyword">new</span> <span class="type">File</span>(<span class="string">"saved.png"</span>)</div><div class="line">      <span class="type">ImageIO</span>.write(img, <span class="string">"png"</span>, outputfile)</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">catch</span> &#123;</div><div class="line">      <span class="keyword">case</span> c : <span class="type">Throwable</span> =&gt; println(<span class="string">s"Something went wrong: <span class="subst">$c</span>"</span>)</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+
+
+<!-- Tags -->
+
+
+
+<div class="tags">
+    <a href="/tags/Scala/" class="button small">Scala</a> <a href="/tags/fractals/" class="button small">fractals</a> <a href="/tags/Mandelbrot-Set/" class="button small">Mandelbrot Set</a>
+</div>
+
+
+
+<!-- Comments -->
+<div>
+    
+    <hr />
+    <h3>Comments:</h3>
+    <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+
+
+
+</div>
+
+
+
+            </div>
+        </div>
+
+        <!-- Footer -->
+<footer id="footer">
+    <div class="inner">
+        <section>
+            <h2>About</h2>
+            <div>
+                This blog serves as a place for me to share some of my projects and explore sentiments regarding development. Hopefully you find some of the things I post here interesting or helpful. I am currently a senior studying Computer Science at the University of Cincinnati.
+            </div>
+        </section>
+        <section>
+            <h2>Follow</h2>
+            <ul class="icons">
+                
+                    <li><a href="https://twitter.com/mocutobi" class="icon style2 fa-twitter" target="_blank" ><span class="label">Twitter</span></a></li>
+                
+                
+                
+                
+                
+                    <li><a href="https://github.com/Mocuto" class="icon style2 fa-github" target="_blank" ><span class="label">GitHub</span></a></li>
+                
+                
+                
+                
+                
+                    <li><a href="mailto:mocuto@outlook.com" class="icon style2 fa-envelope-o" target="_blank" ><span class="label">Email</span></a></li>
+                
+                
+                    <li><a href="\#" class="icon style2 fa-rss" target="_blank" ><span class="label">RSS</span></a></li>
+                
+            </ul>
+        </section>
+        <ul class="copyright">
+            <li>&copy; Tobi Akomolede. All rights reserved</li>
+        </ul>
+    </div>
+</footer>
+    </div>
+
+    <!-- After footer scripts -->
+    
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- skel -->
+<script src="/js/skel.min.js"></script>
+
+<!-- Custom Code -->
+<script src="/js/util.js"></script>
+
+<!--[if lte IE 8]>
+<script src="/js/ie/respond.min.js"></script>
+<![endif]-->
+
+<!-- Custom Code -->
+<script src="/js/main.js"></script>
+
+<!-- Gallery -->
+<script src="//cdn.rawgit.com/noelboss/featherlight/1.3.5/release/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- Disqus Comments -->
+
+<script type="text/javascript">
+    var disqus_shortname = 'mocuto';
+
+    (function(){
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+</body>
+
+</html>
