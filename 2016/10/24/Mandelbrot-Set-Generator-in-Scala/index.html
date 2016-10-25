@@ -144,11 +144,11 @@
 <p>In summation, the process of finding the Mandelbrot set is as follows</p>
 <ol>
 <li>Initialize the empty Mandelbrot set <em>M</em>,</li>
-<li>Take a pixel of the image to be the complex number <em>c</em>, with <em>z = c</em>,</li>
+<li>Take a pixel of the image to be the complex number <em>c</em>, and set <em>z = c</em>,</li>
 <li>Calculate <em>x</em> and <em>y</em>,<ul>
 <li>If the number of iteration for this pixel is greater than <code>MaxIter</code>, where <code>MaxIter</code> is some fixed number, add <em>c</em> to set <em>M</em> and continue to step 4</li>
 <li>If <em>|| z = x + y || &gt; 2</em>, discard <em>c</em> and continue to step 4</li>
-<li>If none of the above, set <em>z = z<sub>2</sub> + c</em> and go to step 3</li>
+<li>If none of the above, set <em>z = z<sup>2</sup> + c</em> and go to step 3</li>
 </ul>
 </li>
 <li>Repeat Steps 1-3 for every pixel in the image.</li>

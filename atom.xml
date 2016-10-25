@@ -5,7 +5,7 @@
   <link href="//atom.xml" rel="self"/>
   
   <link href="mocuto.com/"/>
-  <updated>2016-10-25T02:38:58.000Z</updated>
+  <updated>2016-10-25T13:25:36.000Z</updated>
   <id>mocuto.com/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="mocuto.com/2016/10/24/Mandelbrot-Set-Generator-in-Scala/"/>
     <id>mocuto.com/2016/10/24/Mandelbrot-Set-Generator-in-Scala/</id>
     <published>2016-10-25T02:38:58.000Z</published>
-    <updated>2016-10-25T02:38:58.000Z</updated>
+    <updated>2016-10-25T13:25:36.000Z</updated>
     
     <content type="html"><![CDATA[<p>A fractal is a geometric figure that displays a repeating pattern every scale.The Mandelbrot set is a fractal that is relatively easy to generate and illustrates the concept of a fractal quite well.This tutorial will show you how to generate the Mandelbrot set using parallel Scala routines.</p>
 <p>Before we can start coding, we first have to understand what the Mandelbrot set is and how it is generated.<br>Given a function:</p>
@@ -32,11 +32,11 @@
 <p>In summation, the process of finding the Mandelbrot set is as follows</p>
 <ol>
 <li>Initialize the empty Mandelbrot set <em>M</em>,</li>
-<li>Take a pixel of the image to be the complex number <em>c</em>, with <em>z = c</em>,</li>
+<li>Take a pixel of the image to be the complex number <em>c</em>, and set <em>z = c</em>,</li>
 <li>Calculate <em>x</em> and <em>y</em>,<ul>
 <li>If the number of iteration for this pixel is greater than <code>MaxIter</code>, where <code>MaxIter</code> is some fixed number, add <em>c</em> to set <em>M</em> and continue to step 4</li>
 <li>If <em>|| z = x + y || &gt; 2</em>, discard <em>c</em> and continue to step 4</li>
-<li>If none of the above, set <em>z = z<sub>2</sub> + c</em> and go to step 3</li>
+<li>If none of the above, set <em>z = z<sup>2</sup> + c</em> and go to step 3</li>
 </ul>
 </li>
 <li>Repeat Steps 1-3 for every pixel in the image.</li>
